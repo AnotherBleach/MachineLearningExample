@@ -1,9 +1,9 @@
 import input_data
-#import tensorflow as tf
-import os
-os.environ["CUDA_VISIBLE_DEVICES"]="1"    
+import tensorflow as tf
+#import os
+#os.environ["CUDA_VISIBLE_DEVICES"]="1"    
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-#building a model
+# building a model
 x = tf.placeholder("float", [None, 784])
 W = tf.Variable(tf.zeros([784,10]))
 b = tf.Variable(tf.zeros([10]))
@@ -14,7 +14,7 @@ y_ = tf.placeholder("float", [None,10])
 
 cross_entropy = -tf.reduce_sum(y_*tf.log(y))
 
-#learning rate = 0.01
+learningrate = 0.01
 train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
 
 
@@ -24,12 +24,12 @@ sess.run(init)
 
 
 for i in range(1000):
-  batch_xs, batch_ys = mnist.train.next_batch(100)
-  sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+    batch_xs, batch_ys = mnist.train.next_batch(100)
+    sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
 
 correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
-result = sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels})
-with open("Train_result/ouput.txt","w") as f:
-    f.write(result)
+print sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels})
+saver = tf.train.Saver()
+saver.save(sess,"Train_result/model.ckpt")
